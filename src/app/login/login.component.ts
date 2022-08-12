@@ -16,6 +16,7 @@ export class LoginComponent implements OnInit {
 
   userName = "";
   password = "";
+  displayErrorMessage: boolean = false;
 
 
   constructor(private router: Router) { }
@@ -28,6 +29,9 @@ export class LoginComponent implements OnInit {
     this.accountsArray.map((el) => {
       if(el.userName == this.userName && el.password == this.password){
         valid = true
+        this.displayErrorMessage = false
+      } else {
+        this.displayErrorMessage = true
       }
     })
 
