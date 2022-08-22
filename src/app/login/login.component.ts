@@ -1,5 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+const httpOptions = {
+  headers: new HttpHeaders({ "Content-Type": "application/json"})
+};
+
 import { Router } from '@angular/router';
+
+const BACKEND_URL = "http://localhost:3000";
 
 @Component({
   selector: 'app-login',
@@ -7,39 +14,32 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-
-  accountsArray = [
-    {userName: "abc@gmail.com", password: "123"},
-    {userName: "bbb@gmail.com", password: "222"},
-    {userName: "ccc@gmail.com", password: "333"},
-  ]
-
-  userName = "";
-  password = "";
   displayErrorMessage: boolean = false;
 
+  userDetail = {userName: "", password: ""};
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private httpClient: HttpClient) { }
 
   ngOnInit(): void {
   }
 
-  formSubmit() {    
-    var valid: boolean = false
-    this.accountsArray.map((el) => {
-      if(el.userName == this.userName && el.password == this.password){
-        valid = true
-        this.displayErrorMessage = false
+  public formSubmit() {
+    this.httpClient.post(BACKEND_URL + '/login', this.userDetail, httpOptions).subscribe((data: any) =>{
+      alert(JSON.stringify(this.userDetail));
+      console.log("Data is: ", data)
+      if(data.valid){
+        sessionStorage.setItem('userName', data.userName.toString());
+        sessionStorage.setItem('birthDate', data.birthDate.toString());
+        sessionStorage.setItem('age', data.age.toString());
+        sessionStorage.setItem('email', data.email.toString());
+        sessionStorage.setItem('valid', data.valid.toString());
+
+        this.router.navigateByUrl('/account');
       } else {
-        this.displayErrorMessage = true
+        this.displayErrorMessage = true;
       }
     })
-
-    if(valid){
-      this.redirectAccountPage();
-    };
-
-  };
+  }
 
   redirectAccountPage() {
     console.log("redirected!")
