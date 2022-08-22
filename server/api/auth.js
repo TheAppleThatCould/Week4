@@ -1,29 +1,26 @@
-// var fs = require('fs')
-
-let arrayOfUsers = [
-    {userName: "Bob", birthDate: "11/04/1999", age: 20, email: "email1@gmail.com", password: "111", valid: false},
-    {userName: "John", birthDate: "1/05/1996", age: 22, email: "email2@gmail.com", password: "222", valid: false},
-    {userName: "Dez", birthDate: "15/06/1998", age: 26, email: "email3@gmail.com", password: "333", valid: false}
-]
+var fs = require('fs')
 
 module.exports = function(req, res){
-    console.log("Login request is: ",req)
-
-    let userName = req.body.userName; 
-    let password = req.body.password;
-
-    let userDetails = {valid: false};
-    console.log(userName, password);
-
-    arrayOfUsers.map(el => {
-        if(el.userName == userName || el.email == userName && el.password == password){
-            userDetails = el;
-            userDetails.valid = true;
+    let arrayOfUsers = []
+    fs.readFile("./data/users.json", 'utf8', function(err, data){
+        if (err) throw err;
+        let userArray = JSON.parse(data)
+        arrayOfUsers = userArray.userDetails;
+    
+        let userName = req.body.userName; 
+        let password = req.body.password;
+        let userDetails = {valid: false};
+    
+        if(arrayOfUsers.length > 0){
+            arrayOfUsers.map(el => {
+                if(el.userName == userName || el.email == userName && el.password == password){
+                    userDetails = el;
+                    userDetails.valid = true;
+                }
+            })
         }
+        res.send(userDetails);
     })
-
-
-    res.send(userDetails);
 };
 
 
